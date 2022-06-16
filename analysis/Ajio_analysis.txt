@@ -1,1 +1,5 @@
-The average price is 1,406 Indian Rupees
+The average price is 1,406 rupees (18.28 USD)
+Number of colors: 4,296
+Men's clothing: 42.4%
+Women's clothing: 57.6%
+Total Number of Sales: 367,172Average Discount: 41.2%

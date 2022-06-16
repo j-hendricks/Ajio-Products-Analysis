@@ -11,8 +11,8 @@ id_set = set()
 total_sales = 0
 
 # function that converts from Indian Rupees to USD
-def rupess_to_USD(rup):
-    return 0.013 * rup
+def rupees_to_USD(rup):
+    return round(0.013 * rup, 2)
 
 #encode with latin-1 due to nature of csv file
 with open(file_to_load,encoding='latin-1') as file:
@@ -86,7 +86,7 @@ original_price_set = set(original_price_list)
 # print("Length of brand list is:", len(brand_list))
 # print("Length of brand set is:", len(brand_set))
 
-num_colors = f"Number of colors: {len(color_set)}"
+num_colors = f"Number of colors: {len(color_set):,}\n"
 print(num_colors)
 
 # print(percent_off_list[:10])
@@ -141,11 +141,13 @@ def dict_sort(d):
 
 #jolie-robe has the most sales, followed by max and puma
 sales_sorted = dict_sort(sales)
-# print(sales_sorted)
+most_frequent_brand = list(sales_sorted.keys())[-1]
+most_frequent_brand_results = f"Brand with Most Sales: {most_frequent_brand}/n"
+print(most_frequent_brand_results)
 
 largest_percentage_brand = sales_sorted['jolie-robe'] / total_sales * 100
 
-largest_percent_results = f"Jolie-Robe Percent of Sales: {largest_percentage_brand:.1f}%"
+largest_percent_results = f"Jolie-Robe Percent of Sales: {largest_percentage_brand:.1f}%\n"
 print(largest_percent_results)
 
 color_dict = val_counts(color_list)
@@ -153,13 +155,15 @@ color_dict = val_counts(color_list)
 colors_sorted = dict_sort(color_dict)
 
 # most common color is blue, followed by black and grey
-# print(colors_sorted)
+most_frequent_color = list(colors_sorted.keys())[-1]
+most_frequent_color_results = f"Most Common Color: {most_frequent_color}\n"
+print(most_frequent_color_results)
 
 percent_off_dict = val_counts(percent_off_list) 
 percent_off_sorted = dict_sort(percent_off_dict)
 
 average_discount = sum(percent_off_list) / len(percent_off_list)
-average_discount_results = f"The average discount is {average_discount:.1f}%."
+average_discount_results = f"Average Discount: {average_discount:.1f}%\n"
 print(average_discount_results)
 
 # print(percent_off_sorted)
@@ -189,25 +193,36 @@ for prcnt, count in percent_off_sorted.items():
 percent_men = gender_dict["Men"] / total_sales * 100
 percent_women = gender_dict["Women"] / total_sales * 100
 
-# print(f"{percent_men:.1f}%")
-# print(f"{percent_women:.1f}%")
+men_percentage_results = f"Men's clothing: {percent_men:.1f}%\n"
+women_percentage_results = f"Women's clothing: {percent_women:.1f}%\n"
+print(men_percentage_results)
+print(women_percentage_results)
 
 average_price = sum(discount_price_list) / len(discount_price_list)
-average_price_results = f"The average price is {average_price:,.0f} Indian Rupees"
+average_price_results = f"The average price is {average_price:,.0f} rupees ({rupees_to_USD(average_price)} USD)\n"
 print(average_price_results)
 
 womens_average_price = sum(womens_price) / len(womens_price)
 
 mens_average_price = sum(mens_price) / len(mens_price)
 
-womens_average_price_results = f"{womens_average_price:,.0f} rupees"
-mens_average_price_results = f"{mens_average_price:,.0f} rupees"
+womens_average_price_results = f"Average Cost of Womens Product: {womens_average_price:,.0f} rupees ({rupees_to_USD(womens_average_price)} USD)\n"
+mens_average_price_results = f"Average Cost of Mens Product: {mens_average_price:,.0f} rupees ({rupees_to_USD(mens_average_price)} USD)\n"
 print(womens_average_price_results)
 print(mens_average_price_results)
+
+total_sales_results = f"Total Number of Sales: {total_sales:,}\n"
+print(total_sales_results)
 
 with open(file_to_save, "w") as txt_file:
 
     txt_file.write(average_price_results)
+    txt_file.write(num_colors)
+    txt_file.write(men_percentage_results)
+    txt_file.write(women_percentage_results)
+    txt_file.write(total_sales_results)
+    txt_file.write(average_discount_results)
+
 
 
 

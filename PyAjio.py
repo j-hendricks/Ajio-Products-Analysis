@@ -14,82 +14,19 @@ total_sales = 0
 def rupees_to_USD(rup):
     return round(0.013 * rup, 2)
 
-#encode with latin-1 due to nature of csv file
-with open(file_to_load,encoding='latin-1') as file:
 
-    file_reader = csv.reader(file)
+# dict_sort sorts dictionary by values from least to greatest
+#  code within dict_sort is copied from: https://stackabuse.com/how-to-sort-dictionary-by-value-in-python/
+def dict_sort(d):
+
+    dict_sorted = dict()
+    sorted_keys = sorted(d, key=d.get)
+
+    for k in sorted_keys:
+        dict_sorted[k] = d[k]
     
-    #skip header and store it as a list
-    header = next(file_reader)
+    return dict_sorted
 
-    # find index for each column of interest
-    product_id_index = header.index('Id_Product')
-    brand_index = header.index("Brand")
-    color_index = header.index("Color")
-    discount_price_index = header.index("Discount Price (in Rs.)")
-    original_price_index = header.index("Original Price (in Rs.)")
-    gender_index = header.index("Category_by_gender")
-
-    # make lists containing each value for given column
-    # note that prices are in Indian Rupees (INR)
-    product_id_list = list()
-    brand_list = list()
-    color_list = list()
-    discount_price_list = list()
-    original_price_list = list()
-    percent_off_list = list()
-    gender_dict = {"Men": 0, "Women": 0}
-    womens_price = list()
-    mens_price = list()
-
-    #add each product id to list
-    for row in file_reader:
-        
-        #each row is one sale
-        total_sales += 1
-
-        # find relevant values
-        prod_id = int(row[product_id_index])
-        brand = row[brand_index]
-        color = row[color_index]
-        discount = int(row[discount_price_index].replace(',',''))
-        original = int(row[original_price_index].replace(',',''))
-        percent_off = int(round((original - discount) / original * 100,0))
-
-        # add values to list
-        product_id_list.append(prod_id)
-        brand_list.append(brand)
-        color_list.append(color)
-        discount_price_list.append(discount)
-        original_price_list.append(original)
-        percent_off_list.append(percent_off)
-
-        if row[gender_index] == "Men":
-            gender_dict["Men"] += 1
-            mens_price.append(discount)
-        else:
-            gender_dict["Women"] += 1
-            womens_price.append(discount)       
-
-#convert lists to sets
-product_id_set = set(product_id_list)
-brand_set = set(brand_list)
-color_set = set(color_list)
-discount_price_set = set(discount_price_list)
-original_price_set = set(original_price_list)
-
-# length of list and set are the same for product id, meaning each product is unique
-# print("Length of id_list:",len(product_id_list))
-# print("Length of id_set:",len(product_id_set))
-
-# 1,975 different brands
-# print("Length of brand list is:", len(brand_list))
-# print("Length of brand set is:", len(brand_set))
-
-num_colors = f"Number of colors: {len(color_set):,}\n"
-print(num_colors)
-
-# print(percent_off_list[:10])
 
 # function returns dictionary containing each brand and number of sales
 def val_counts(category):
@@ -124,25 +61,97 @@ def val_counts(category):
 
     return number_of_sales_dict
 
+#encode with latin-1 due to nature of csv file
+with open(file_to_load,encoding='latin-1') as file:
+
+    file_reader = csv.reader(file)
+    
+    #skip header and store it as a list
+    header = next(file_reader)
+
+    # find index for each column of interest
+    product_id_index = header.index('Id_Product')
+    brand_index = header.index("Brand")
+    color_index = header.index("Color")
+    discount_price_index = header.index("Discount Price (in Rs.)")
+    original_price_index = header.index("Original Price (in Rs.)")
+    gender_index = header.index("Category_by_gender")
+
+    # make lists containing each value for given column
+    # note that prices are in Indian Rupees (INR)
+    product_id_list = list()
+    brand_list = list()
+    color_list = list()
+    discount_price_list = list()
+    original_price_list = list()
+    percent_off_list = list()
+    gender_dict = {"Men": 0, "Women": 0}
+    womens_price = list()
+    mens_price = list()
+
+    # go through each row of data
+    for row in file_reader:
+        
+        #each row is one sale
+        total_sales += 1
+
+        # find relevant values
+        prod_id = int(row[product_id_index])
+        brand = row[brand_index]
+        color = row[color_index]
+        discount = int(row[discount_price_index].replace(',',''))
+        original = int(row[original_price_index].replace(',',''))
+        percent_off = int(round((original - discount) / original * 100,0))
+
+        # add values to list
+        product_id_list.append(prod_id)
+        brand_list.append(brand)
+        color_list.append(color)
+        discount_price_list.append(discount)
+        original_price_list.append(original)
+        percent_off_list.append(percent_off)
+
+        #keep track of male and female clothing sales and prices
+        if row[gender_index] == "Men":
+            gender_dict["Men"] += 1
+            mens_price.append(discount)
+        else:
+            gender_dict["Women"] += 1
+            womens_price.append(discount)       
+
+#convert lists to sets in order to obtain only unique values
+product_id_set = set(product_id_list)
+brand_set = set(brand_list)
+color_set = set(color_list)
+discount_price_set = set(discount_price_list)
+original_price_set = set(original_price_list)
+
+# length of list and set are the same for product id, meaning each product_id is unique
+# print("Length of id_list:",len(product_id_list))
+# print("Length of id_set:",len(product_id_set))
+
+# 1,975 different brands
+# print("", len(brand_list))
+number_brands_results = f"Number of Brands: {len(brand_set):,}"
+print(number_brands_results)
+
+num_colors_results = f"Number of colors: {len(color_set):,}\n"
+print(num_colors_results)
+
+# print(percent_off_list[:10])
+
+
+
+
 #dictionary of brands and their number of sales, but can't tell which one has the most sales
 sales = val_counts(brand_list)
 
-# dict_sort sorts dictionary by values from least to greatest
-#  code within dict_sort is copied from: https://stackabuse.com/how-to-sort-dictionary-by-value-in-python/
-def dict_sort(d):
 
-    dict_sorted = dict()
-    sorted_keys = sorted(d, key=d.get)
-
-    for k in sorted_keys:
-        dict_sorted[k] = d[k]
-    
-    return dict_sorted
 
 #jolie-robe has the most sales, followed by max and puma
 sales_sorted = dict_sort(sales)
 most_frequent_brand = list(sales_sorted.keys())[-1]
-most_frequent_brand_results = f"Brand with Most Sales: {most_frequent_brand}/n"
+most_frequent_brand_results = f"Brand with Most Sales: {most_frequent_brand}\n"
 print(most_frequent_brand_results)
 
 largest_percentage_brand = sales_sorted['jolie-robe'] / total_sales * 100
@@ -217,7 +226,7 @@ print(total_sales_results)
 with open(file_to_save, "w") as txt_file:
 
     txt_file.write(average_price_results)
-    txt_file.write(num_colors)
+    txt_file.write(num_colors_results)
     txt_file.write(men_percentage_results)
     txt_file.write(women_percentage_results)
     txt_file.write(total_sales_results)

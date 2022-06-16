@@ -132,38 +132,29 @@ original_price_set = set(original_price_list)
 
 # 1,975 different brands
 # print("", len(brand_list))
-number_brands_results = f"Number of Brands: {len(brand_set):,}\n"
-print(number_brands_results)
-
-number_colors_results = f"Number of colors: {len(color_set):,}\n"
-print(number_colors_results)
 
 #dictionary of brands and their number of sales, but can't tell which one has the most sales
 sales = val_counts(brand_list)
 
 #jolie-robe has the most sales, followed by max and puma
 sales_sorted = dict_sort(sales)
-most_frequent_brand = list(sales_sorted.keys())[-1]
-most_frequent_brand_results = f"Brand with Most Sales: {most_frequent_brand}\n"
-print(most_frequent_brand_results)
+most_frequent_brands = list(sales_sorted.keys())[-1] + ", " + list(sales_sorted.keys())[-2] + ", " + list(sales_sorted.keys())[-3]
 
-largest_percentage_brand = sales_sorted['jolie-robe'] / total_sales * 100
-largest_percent_results = f"Jolie-Robe Percent of Sales: {largest_percentage_brand:.1f}%\n"
-print(largest_percent_results)
+largest_percentage_brand = sales_sorted[list(sales_sorted.keys())[-1]] / total_sales * 100
 
 color_dict = val_counts(color_list)
 colors_sorted = dict_sort(color_dict)
 # most common color is blue, followed by black and grey
-most_frequent_color = list(colors_sorted.keys())[-1]
-most_frequent_color_results = f"Most Common Color: {most_frequent_color}\n"
-print(most_frequent_color_results)
+most_frequent_colors = list(colors_sorted.keys())[-1] + ", " + list(colors_sorted.keys())[-2] + ", " + list(colors_sorted.keys())[-3]
 
 percent_off_dict = val_counts(percent_off_list) 
 percent_off_sorted = dict_sort(percent_off_dict)
 
 average_discount = sum(percent_off_list) / len(percent_off_list)
-average_discount_results = f"Average Discount: {average_discount:.1f}%\n"
-print(average_discount_results)
+
+average_price = sum(discount_price_list) / len(discount_price_list)
+womens_average_price = sum(womens_price) / len(womens_price)
+mens_average_price = sum(mens_price) / len(mens_price)
 
 # print(percent_off_sorted)
 
@@ -189,43 +180,65 @@ for prcnt, count in percent_off_sorted.items():
         
 # print(gender_dict)
 
-percent_men = gender_dict["Men"] / total_sales * 100
-percent_women = gender_dict["Women"] / total_sales * 100
-men_percentage_results = f"Men's clothing: {percent_men:.1f}%\n"
-women_percentage_results = f"Women's clothing: {percent_women:.1f}%\n"
-print(men_percentage_results)
-print(women_percentage_results)
+    percent_men = gender_dict["Men"] / total_sales * 100
+    percent_women = gender_dict["Women"] / total_sales * 100
 
-average_price = sum(discount_price_list) / len(discount_price_list)
-average_price_results = f"The average price is {average_price:,.0f} rupees ({rupees_to_USD(average_price)} USD)\n"
-print(average_price_results)
-
-womens_average_price = sum(womens_price) / len(womens_price)
-
-mens_average_price = sum(mens_price) / len(mens_price)
-
-womens_average_price_results = f"Average Cost of Womens Product: {womens_average_price:,.0f} rupees ({rupees_to_USD(womens_average_price)} USD)\n"
-mens_average_price_results = f"Average Cost of Mens Product: {mens_average_price:,.0f} rupees ({rupees_to_USD(mens_average_price)} USD)\n"
-print(womens_average_price_results)
-print(mens_average_price_results)
-
-total_sales_results = f"Total Number of Sales: {total_sales:,}\n"
-print(total_sales_results)
 
 with open(file_to_save, "w") as txt_file:
 
-    txt_file.write(average_price_results)
-    txt_file.write(number_colors_results)
-    txt_file.write(men_percentage_results)
-    txt_file.write(women_percentage_results)
+    number_brands_results = f"Number of Brands: {len(brand_set):,}\n"
+    most_frequent_brand_results = f"Brands with Most Sales: {most_frequent_brands}\n"
+    largest_percent_results = f"Jolie-Robe Percent of Sales: {largest_percentage_brand:.1f}%\n"
+
+    print(number_brands_results)
+    print(most_frequent_brand_results)
+    print(largest_percent_results)
+
+
+    total_sales_results = f"Total Number of Sales: {total_sales:,}\n"
+    average_price_results = f"Average Price: {average_price:,.0f} rupees ({rupees_to_USD(average_price)} USD)\n"
+    average_discount_results = f"Average Discount: {average_discount:.1f}%\n"
+
+    print(total_sales_results)
+    print(average_discount_results)
+    print(average_price_results)
+
+
+    womens_average_price_results = f"Average Cost of Womens Product: {womens_average_price:,.0f} rupees ({rupees_to_USD(womens_average_price)} USD)\n"
+    mens_average_price_results = f"Average Cost of Mens Product: {mens_average_price:,.0f} rupees ({rupees_to_USD(mens_average_price)} USD)\n"
+    men_percentage_results = f"Men's clothing: {percent_men:.1f}%\n"
+    women_percentage_results = f"Women's clothing: {percent_women:.1f}%\n"
+    
+    print(womens_average_price_results)
+    print(mens_average_price_results)
+    print(men_percentage_results)
+    print(women_percentage_results)
+
+
+    number_colors_results = f"Number of colors: {len(color_set):,}\n"
+    most_frequent_color_results = f"Most Common Colors: {most_frequent_colors}\n"
+
+    print(number_colors_results)
+    print(most_frequent_color_results)
+    
+    txt_file.write(number_brands_results)
+    txt_file.write(most_frequent_brand_results)
+    txt_file.write(largest_percent_results + "\n")
+    
     txt_file.write(total_sales_results)
-    txt_file.write(average_discount_results)
+    txt_file.write(average_price_results)
+    txt_file.write(average_discount_results + "\n")
+    
     txt_file.write(mens_average_price_results)
     txt_file.write(womens_average_price_results)
-    txt_file.write(most_frequent_color_results)
-    txt_file.write(largest_percent_results)
-    txt_file.write(most_frequent_brand_results)
-    txt_file.write(number_brands_results)
+    txt_file.write(men_percentage_results)
+    txt_file.write(women_percentage_results + "\n")
+
+    txt_file.write(number_colors_results)
+    txt_file.write(most_frequent_color_results + "\n")
+    
+    
+    
 
 
 

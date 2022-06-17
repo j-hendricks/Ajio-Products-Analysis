@@ -1,13 +1,13 @@
 import csv
 import os
 
-file_to_load = os.path.join("Resources", "Ajio Fasion Clothing.csv")
+file_to_load = os.path.join("Resources", "Ajio Fashion Clothing.csv")
 file_to_save = os.path.join("analysis", "Ajio_analysis.txt")
 
-#set containing all unique product ids
+# set containing all unique product ids
 id_set = set()
 
-#keeps track of number of sales
+# keeps track of number of sales
 total_sales = 0
 
 # function that converts from Indian Rupees to USD
@@ -16,7 +16,7 @@ def rupees_to_USD(rup):
 
 
 # dict_sort sorts dictionary by values from least to greatest
-#  code within dict_sort is copied from: https://stackabuse.com/how-to-sort-dictionary-by-value-in-python/
+# code within dict_sort is copied from: https://stackabuse.com/how-to-sort-dictionary-by-value-in-python/
 def dict_sort(d):
 
     dict_sorted = dict()
@@ -31,18 +31,14 @@ def dict_sort(d):
 # function returns dictionary containing each brand and number of sales
 def val_counts(category):
 
-    # sort list
-    # find length of list
-    # for each index, if the list(index) = list(index+1) then add 1 to a counter
-
-    #index of first and last element in brand_list
+    # index of first and last element in brand_list
     rowStart = 0
     rowEnd = len(category) - 1
 
     # dictionary with brands as keys and number of sales as values
     number_of_sales_dict = dict()
     
-    #sort the brands list
+    # sort the brands list
     category.sort()
     
     number_of_sales = 1
@@ -61,12 +57,12 @@ def val_counts(category):
 
     return number_of_sales_dict
 
-#encode with latin-1 due to nature of csv file
+# encode with latin-1 due to nature of csv file
 with open(file_to_load,encoding='latin-1') as file:
 
     file_reader = csv.reader(file)
     
-    #skip header and store it as a list
+    # skip header and store it as a list
     header = next(file_reader)
 
     # find index for each column of interest
@@ -92,7 +88,7 @@ with open(file_to_load,encoding='latin-1') as file:
     # go through each row of data
     for row in file_reader:
         
-        #each row is one sale
+        # each row is one sale
         total_sales += 1
 
         # find relevant values
@@ -111,7 +107,7 @@ with open(file_to_load,encoding='latin-1') as file:
         original_price_list.append(original)
         percent_off_list.append(percent_off)
 
-        #keep track of male and female clothing sales and prices
+        # keep track of male and female clothing sales and prices
         if row[gender_index] == "Men":
             gender_dict["Men"] += 1
             mens_price.append(discount)
@@ -119,7 +115,7 @@ with open(file_to_load,encoding='latin-1') as file:
             gender_dict["Women"] += 1
             womens_price.append(discount)       
 
-#convert lists to sets in order to obtain only unique values
+# convert lists to sets in order to obtain only unique values
 product_id_set = set(product_id_list)
 brand_set = set(brand_list)
 color_set = set(color_list)
@@ -133,19 +129,25 @@ original_price_set = set(original_price_list)
 # 1,975 different brands
 # print("", len(brand_list))
 
-#dictionary of brands and their number of sales, but can't tell which one has the most sales
+# dictionary of brands and their number of sales, but can't tell which one has the most sales
 sales = val_counts(brand_list)
 
-#jolie-robe has the most sales, followed by max and puma
+# jolie-robe has the most sales, followed by max and puma
 sales_sorted = dict_sort(sales)
-most_frequent_brands = list(sales_sorted.keys())[-1] + ", " + list(sales_sorted.keys())[-2] + ", " + list(sales_sorted.keys())[-3]
+most_frequent_brand = list(sales_sorted.keys())[-1]
+second_most_frequent_brand = list(sales_sorted.keys())[-2]
+third_most_frequent_brand = list(sales_sorted.keys())[-3]
+most_frequent_brands = most_frequent_brand + ", " + second_most_frequent_brand + ", " + third_most_frequent_brand
 
-largest_percentage_brand = sales_sorted[list(sales_sorted.keys())[-1]] / total_sales * 100
+largest_percentage_brand = sales_sorted[most_frequent_brand] / total_sales * 100
 
 color_dict = val_counts(color_list)
 colors_sorted = dict_sort(color_dict)
 # most common color is blue, followed by black and grey
-most_frequent_colors = list(colors_sorted.keys())[-1] + ", " + list(colors_sorted.keys())[-2] + ", " + list(colors_sorted.keys())[-3]
+most_frequent_color = list(colors_sorted.keys())[-1]
+second_most_frequent_color = list(colors_sorted.keys())[-2]
+third_most_frequent_color = list(colors_sorted.keys())[-3]
+most_frequent_colors = most_frequent_color + ", " + second_most_frequent_color + ", " + third_most_frequent_color
 
 percent_off_dict = val_counts(percent_off_list) 
 percent_off_sorted = dict_sort(percent_off_dict)
@@ -158,7 +160,7 @@ mens_average_price = sum(mens_price) / len(mens_price)
 
 # print(percent_off_sorted)
 
-discount_dict = {'No Discount':0, '10-20% Off':0, '20-30% Off': 0, '30-50% Off':0, 'More Than 50% off':0}
+discount_dict = {'No Discount':0, '10-20% Off':0, '20-30% Off': 0, '30-50% Off':0, '>50% Off':0}
 
 for prcnt, count in percent_off_sorted.items():
     
@@ -171,30 +173,32 @@ for prcnt, count in percent_off_sorted.items():
     elif prcnt > 30 and prcnt <= 50:
         discount_dict['30-50% Off'] += count
     else:
-        discount_dict['More Than 50% off'] += count
+        discount_dict['>50% Off'] += count
 
-# print(dict_sort(discount_dict)) 
+for key in discount_dict.keys():
+    discount_dict[key] = round(discount_dict[key] / total_sales * 100, 1)
 
-#each product_id is unique
+# each product_id is unique
 # print(dict_sort(val_counts(product_id_list)))
         
 # print(gender_dict)
 
-    percent_men = gender_dict["Men"] / total_sales * 100
-    percent_women = gender_dict["Women"] / total_sales * 100
+percent_men = gender_dict["Men"] / total_sales * 100
+percent_women = gender_dict["Women"] / total_sales * 100
 
 
 with open(file_to_save, "w") as txt_file:
 
+    # brand information
     number_brands_results = f"Number of Brands: {len(brand_set):,}\n"
     most_frequent_brand_results = f"Brands with Most Sales: {most_frequent_brands}\n"
-    largest_percent_results = f"Jolie-Robe Percent of Sales: {largest_percentage_brand:.1f}%\n"
+    largest_percent_results = f"{most_frequent_brand} Percent of Sales: {largest_percentage_brand:.1f}%\n"
 
     print(number_brands_results)
     print(most_frequent_brand_results)
     print(largest_percent_results)
 
-
+    # sales information
     total_sales_results = f"Total Number of Sales: {total_sales:,}\n"
     average_price_results = f"Average Price: {average_price:,.0f} rupees ({rupees_to_USD(average_price)} USD)\n"
     average_discount_results = f"Average Discount: {average_discount:.1f}%\n"
@@ -202,8 +206,10 @@ with open(file_to_save, "w") as txt_file:
     print(total_sales_results)
     print(average_discount_results)
     print(average_price_results)
+    for pair in discount_dict.items():
+        print(f"{pair[0]}: {pair[1]}%\n") 
 
-
+    # gender demogrpahics
     womens_average_price_results = f"Average Cost of Womens Product: {womens_average_price:,.0f} rupees ({rupees_to_USD(womens_average_price)} USD)\n"
     mens_average_price_results = f"Average Cost of Mens Product: {mens_average_price:,.0f} rupees ({rupees_to_USD(mens_average_price)} USD)\n"
     men_percentage_results = f"Men's clothing: {percent_men:.1f}%\n"
@@ -214,28 +220,49 @@ with open(file_to_save, "w") as txt_file:
     print(men_percentage_results)
     print(women_percentage_results)
 
-
+    # common colors
     number_colors_results = f"Number of colors: {len(color_set):,}\n"
     most_frequent_color_results = f"Most Common Colors: {most_frequent_colors}\n"
 
     print(number_colors_results)
     print(most_frequent_color_results)
     
+    # title
+    txt_file.write("\n*** Ajio Product Summary ***\n\n")
+    
+    # brand information
+    txt_file.write("Brands\n")
+    txt_file.write("--------------------\n")
     txt_file.write(number_brands_results)
     txt_file.write(most_frequent_brand_results)
-    txt_file.write(largest_percent_results + "\n")
-    
+    txt_file.write(largest_percent_results)
+    txt_file.write("--------------------\n\n")
+
+    # sales information
+    txt_file.write("Sales\n")
+    txt_file.write("--------------------\n")
     txt_file.write(total_sales_results)
     txt_file.write(average_price_results)
-    txt_file.write(average_discount_results + "\n")
+    txt_file.write(average_discount_results)
+    for pair in discount_dict.items():
+        txt_file.write(f"{pair[0]}: {pair[1]}%\n") 
+    txt_file.write("--------------------\n\n")
     
+    # gender demogrpahics
+    txt_file.write("Demographics\n")
+    txt_file.write("--------------------\n")
     txt_file.write(mens_average_price_results)
     txt_file.write(womens_average_price_results)
     txt_file.write(men_percentage_results)
-    txt_file.write(women_percentage_results + "\n")
+    txt_file.write(women_percentage_results)
+    txt_file.write("--------------------\n\n")
 
+    # common colors
+    txt_file.write("Color of Products\n")
+    txt_file.write("--------------------\n")
     txt_file.write(number_colors_results)
-    txt_file.write(most_frequent_color_results + "\n")
+    txt_file.write(most_frequent_color_results)
+    txt_file.write("--------------------\n")
     
     
     
